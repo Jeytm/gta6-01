@@ -3,16 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Block Dodger</title>
-<style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #11141b; }
-  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
-  /* Read aloud, never shown: the status line screen readers announce. */
-  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-</style>
+<title>Solmarina — Open-World Crime Game</title>
+<link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-<canvas id="game" aria-label="Block Dodger: move the paddle left and right to dodge falling blocks and catch coins"></canvas>
+<canvas id="game" aria-label="Solmarina: an open-world crime game. Drive, explore the city, take jobs from Luz, and stay ahead of the SCPD."></canvas>
+
+<div id="vignette"></div>
+
+<div id="hud" class="hidden">
+  <div id="hud-top-left">
+    <canvas id="minimap" width="180" height="180" aria-label="Minimap of Solmarina"></canvas>
+    <div id="wanted-stars" aria-label="Wanted level">☆☆☆☆☆</div>
+    <div id="evade-indicator">👁 EVADING…</div>
+  </div>
+  <div id="hud-top-right">
+    <div id="cash-display">$120</div>
+    <div id="weapon-display">P9 Pistol • ∞</div>
+  </div>
+  <div id="objective-tracker">
+    <div id="objective-title">SOLMARINA</div>
+    <div id="objective-text">Go to Luz’s Garage</div>
+  </div>
+  <div id="hud-bottom-left">
+    <div id="health-row"><span class="bar-label">HP</span><div class="bar"><div id="health-fill"></div></div></div>
+    <div id="armor-row"><span class="bar-label">ARMOR</span><div class="bar"><div id="armor-fill"></div></div></div>
+  </div>
+  <div id="speedometer"><span id="speed-value">0</span><span class="speed-unit">km/h</span></div>
+  <div id="district-label">Central Solmarina</div>
+  <div id="prompt"></div>
+  <div id="subtitle"><span id="subtitle-who">Luz</span><span id="subtitle-text"></span></div>
+</div>
+
+<div id="title-flash"><div id="flash-main"></div><div id="flash-sub"></div></div>
+
+<section id="screen-title" class="screen show">
+  <div class="panel title-panel">
+    <div class="kicker">AN ORIGINAL OPEN-WORLD CRIME GAME</div>
+    <h1>SOLMARINA</h1>
+    <p class="tagline">Five years clean. One city that never forgets. Mara Quinn is back behind the wheel.</p>
+    <p class="story">Steal cars, outrun the SCPD, run jobs for Luz Delgado, and take the Vultures’ stash — across nine districts of sun-soaked streets, beaches and docks. Every building, character and note of music is original.</p>
+    <div class="buttons">
+      <button id="btn-new" class="btn primary">▶ New Game</button>
+      <button id="btn-continue" class="btn">↻ Continue</button>
+      <button id="btn-mute" class="btn">🔊 Sound on</button>
+    </div>
+    <div class="controls-grid">
+      <div><kbd>W A S D</kbd><span>Move / drive</span></div>
+      <div><kbd>Mouse</kbd><span>Aim &amp; shoot</span></div>
+      <div><kbd>E</kbd><span>Enter / leave car</span></div>
+      <div><kbd>Shift</kbd><span>Sprint</span></div>
+      <div><kbd>Space</kbd><span>Handbrake</span></div>
+      <div><kbd>Q / Tab</kbd><span>Switch weapon</span></div>
+      <div><kbd>F</kbd><span>Punch</span></div>
+      <div><kbd>Esc</kbd><span>Pause</span></div>
+    </div>
+    <p class="fineprint">Progress saves at the safehouse and after every mission. Wanted stars cool off when the police lose sight of you — or a $250 respray at Marina Auto Body.</p>
+  </div>
+</section>
+
+<section id="screen-pause" class="screen">
+  <div class="panel">
+    <h2>PAUSED</h2>
+    <p id="pause-stats"></p>
+    <div class="buttons column">
+      <button id="btn-resume" class="btn primary">Resume</button>
+      <button id="btn-save" class="btn">Save game</button>
+      <button id="btn-restart" class="btn">Restart</button>
+      <button id="btn-quit" class="btn">Quit to title</button>
+    </div>
+  </div>
+</section>
+
+<section id="screen-busted" class="screen">
+  <div class="panel busted">
+    <h2>BUSTED</h2>
+    <p>The SCPD caught up with Mara Quinn.</p>
+    <p id="busted-penalty"></p>
+    <div class="buttons"><button id="btn-respawn" class="btn primary">Back to the streets</button></div>
+  </div>
+</section>
+
+<section id="screen-wasted" class="screen">
+  <div class="panel wasted">
+    <h2>WASTED</h2>
+    <p>Mara wakes up at St. Alma Hospital.</p>
+    <p id="wasted-penalty"></p>
+    <div class="buttons"><button id="btn-respawn-2" class="btn primary">Back to the streets</button></div>
+  </div>
+</section>
+
+<section id="screen-complete" class="screen">
+  <div class="panel complete">
+    <h2>THE LAST SCORE — COMPLETE</h2>
+    <p>Solmarina is yours now, Mara. Every street, every sunset.</p>
+    <p id="complete-stats"></p>
+    <div class="buttons"><button id="btn-freeroam" class="btn primary">Keep playing — free roam</button></div>
+  </div>
+</section>
+
 <p id="status" role="status" aria-live="polite"></p>
 <script type="module" src="./src/main.js"></script>
 </body>
